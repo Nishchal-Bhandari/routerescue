@@ -1,0 +1,55 @@
+import {test,expect} from '@playwright/test';
+
+test('complete recovery, second disruption, relaxation and approval',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');
+ await expect(page.getByRole('heading',{name:'Let’s keep your trip on track.'})).toBeVisible();
+ await page.getByRole('button',{name:'Simulate flight cancellation',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'A plan that keeps the evening yours.'})).toBeVisible();
+ await expect(page.locator('.option-price')).toContainText('₹3,200');
+ await page.screenshot({path:'../../artifacts/recovery-desktop.png',fullPage:true});
+ await page.getByRole('button',{name:'Journey & cost details'}).click();
+ await expect(page.getByText('Transfer to bus terminal',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Review recovery'}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await expect(page.getByRole('button',{name:'Confirm this recovery plan'})).toBeDisabled();
+ await page.getByRole('button',{name:'Close dialog'}).click();
+ await page.getByRole('button',{name:'Simulate bus unavailable'}).click();
+ await expect(page.getByRole('heading',{name:'A small change could get you there.'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Add ₹800 to your limit'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Allow 45 more minutes'})).toBeVisible();
+ await page.screenshot({path:'../../artifacts/frontier-desktop.png',fullPage:true});
+ await page.getByRole('button',{name:'Increase budget to ₹5,800'}).click();
+ await expect(page.getByRole('button',{name:'Review recovery'})).toBeVisible();
+ await page.getByRole('button',{name:'Review recovery'}).click();
+ await page.getByRole('checkbox',{name:/I reviewed/}).check();
+ await page.getByRole('button',{name:'Confirm this recovery plan'}).click();
+ await expect(page.getByText('Simulation complete',{exact:true})).toBeVisible();
+ await expect(page.getByText(/Booking pending with provider/)).toBeVisible();
+ await page.screenshot({path:'../../artifacts/receipt-desktop.png',fullPage:true});
+ const downloadPromise=page.waitForEvent('download');await page.getByRole('link',{name:'JSON'}).click();
+ const download=await downloadPromise;expect(download.suggestedFilename()).toMatch(/routerescue-.*json/);
+ await page.getByRole('button',{name:'Close dialog'}).click();
+ await page.reload();await expect(page.getByRole('heading',{name:'More time in Bengaluru'})).toBeVisible();
+ await page.getByRole('button',{name:'Activity',exact:true}).click();
+ await expect(page.getByText('simulated complete',{exact:true})).toBeVisible();
+ expect(errors).toEqual([]);
+});
+
+test('mobile intake, hotel recovery and keyboard dialog dismissal',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/');
+ await page.getByRole('button',{name:'New trip',exact:true}).click();
+ await page.getByLabel('Trip name').fill('Hotel recovery test');
+ await page.getByRole('combobox',{name:'Scenario',exact:true}).selectOption('hotel');
+ await page.getByRole('button',{name:'Create trip',exact:true}).click();
+ await page.getByRole('button',{name:'Simulate hotel cancellation',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'A new stay, the same evening'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.screenshot({path:'../../artifacts/recovery-mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'Review recovery'}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
+ await page.getByRole('button',{name:'Open navigation'}).click();
+ await page.getByRole('button',{name:'My trip',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Your trip, all together.'})).toBeVisible();
+});
