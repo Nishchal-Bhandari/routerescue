@@ -1,0 +1,448 @@
+word/document.xml
+ROUTERESCUE AI
+Full Implementation Guide
+DEVHOST 2026 • PS 4.1: AI Agent for Travel Disruption Recovery
+Prepared as a build-ready technical plan and presentation companion.
+1. Executive summary
+RouteRescue AI is a human-supervised agent that helps travellers recover from cancelled flights, major delays, missed connections, severe weather, or a disrupted transport leg. It assembles the current trip context, checks alternatives across supported travel modes, validates transfers and constraints, ranks feasible plans, and presents a clear explanation with source freshness and uncertainty. It does not autonomously spend money or change a booking.
+Recommended design: LangChain Deep Agents for planning and delegation; a custom MCP server as the standard tool interface; REST API adapters for actual data providers; a deterministic feasibility/scoring service; FastAPI backend; React frontend; PostgreSQL or SQLite storage; and a labelled simulator for reliable demos. Deep Agents supports planning, subagents, skills, filesystem/context management, and MCP tools according to its official documentation [1]. MCP standardises how a client discovers and calls tools/resources/prompts; it does not itself provide travel data or guarantee an integration is correct [2].
+2. Problem statement and scope
+Source problem: PS 4.1, “AI Agent for Travel Disruption Recovery.” The expected prototype detects or simulates disruptions, identifies affected bookings, searches alternatives based on budget/timing/destination, and produces a recovery itinerary with proposed changes/actions.
+MVP scope
+Input: user-entered disruption or demo-triggered cancellation/delay; existing itinerary; origin/destination; latest acceptable arrival; extra-spend ceiling; number of travellers; baggage/mobility needs; preferred transport modes.
+Search: flight offers/status where provider access is available; road routing/transfer times; weather context; curated train/bus schedule data or explicitly simulated alternatives.
+Output: 2–3 feasible ranked options with total estimated extra cost, arrival estimate, transfer buffers, evidence/source timestamps, confidence/limitations, and recommended next action.
+Approval: user must explicitly approve any booking, cancellation, payment, notification, or irreversible change.
+Fallback: if live APIs fail or coverage is unavailable, switch to clearly labelled demo data and never describe it as live availability.
+Out of scope for the first version
+Universal access to every airline, train operator, bus operator, OTA or booking account.
+Guaranteeing compensation, refunds, rebooking rights, or seat availability.
+Autonomous purchasing or cancelling bookings without approval.
+Claiming that weather alone proves a specific service was disrupted.
+3. Example scenario: how the agent handles a disruption
+Scenario for the demo (use seeded data, and label it as a simulation): a traveller’s flight is cancelled. They need to reach Bengaluru by 8:00 PM and can spend no more than ₹5,000 extra.
+Stage
+System behaviour
+Detect/receive
+The UI receives a cancellation event or the traveller selects “My flight was cancelled.” Save the event time and source.
+Recover context
+Load the traveller’s itinerary and booking metadata, if available; otherwise ask for flight number, current airport, destination, passenger count and deadline.
+Clarify constraints
+Ask only for missing decision-critical details: latest arrival, maximum extra spend, flexibility on bus/train/road, baggage, accessibility and willingness to use a nearby airport/station.
+Plan
+Deep Agent creates tasks: verify disruption, search flight alternatives, search ground transport, compute transfers, check weather risks, evaluate costs and rank.
+Fetch evidence
+Parallel read-only MCP tools call provider adapters. Each result includes source, fetched_at, currency, timezone, whether availability is confirmed, and demo/live status.
+Validate
+Deterministic engine removes options that exceed the budget, arrive after deadline, have impossible transfer times, or lack required accessibility.
+Rank/explain
+Rank feasible options by deadline fit, extra cost, arrival time, transfer risk and data confidence. Show why each option is included and what remains uncertain.
+Approval
+User selects an option. UI displays a review card: itinerary changes, total estimated cost, cancellation/refund caveats, provider link, and any action to be taken. Require explicit confirmation.
+Execute/hand off
+For MVP, open the provider’s official booking page or run a sandbox/simulated action. If a future booking API is integrated, revalidate price and availability before committing.
+Verify and monitor
+Store provider confirmation/reference only after provider success. Continue monitoring if supported; otherwise tell the user monitoring is not active.
+4. Why this architecture
+MCP is an integration layer, not the agent brain, data source, database, or safety policy. The Deep Agent decides which tasks to perform and invokes tools; the MCP server exposes narrow, typed operations; REST adapters communicate with providers; the deterministic engine checks hard constraints; the UI owns consent; and the database/audit log preserves the trip and decision trail.
+Layer
+Responsibility
+Why it matters
+React + Tailwind UI
+Trip intake, disruption status, options, evidence, approval screens
+Makes the workflow visible and keeps consent explicit.
+FastAPI application
+Authentication, request validation, agent invocation, API endpoints
+Central control point for policy, schemas and sessions.
+Deep Agents / LangGraph
+Planning, task decomposition, specialist subagents, retry/replan decisions
+Handles multi-step reasoning without hardcoding every path.
+MCP client
+Connects agent to tools on the Travel MCP server
+Provides a standard tool interface and discovery.
+Travel MCP server
+Typed tools such as search_alternatives and compute_transfer
+Separates agent from vendor-specific implementation.
+Provider adapters
+Amadeus, Google Routes, Open-Meteo, curated transport data, simulator
+Each provider has its own auth, schema and coverage.
+Rules/ranking engine
+Hard constraint checks and deterministic scoring
+Prevents an LLM from inventing feasibility or arithmetic.
+PostgreSQL / SQLite
+Trips, disruption events, alternatives, approvals, audit log
+Enables persistence and traceability.
+Observability
+Structured logs, trace IDs, latency/error dashboards
+Makes failures diagnosable and demo claims measurable.
+5. Recommended technology stack
+Component
+Recommendation
+Notes
+Agent framework
+Python LangChain Deep Agents + LangGraph
+Use planning/todos and custom subagents only where helpful; do not create agents for every simple API call.
+MCP server
+Python MCP SDK
+One custom Travel Recovery server is enough for the MVP.
+Backend
+Python 3.12+ and FastAPI
+Pydantic models for request/response validation.
+Frontend
+React + Vite + Tailwind CSS
+Mobile-first recovery dashboard and approval flow.
+Database
+SQLite for local demo; PostgreSQL for deployment
+Store only necessary personal/trip data.
+External data
+Amadeus API if access/coverage fits; Google Maps Routes API; Open-Meteo; curated schedule feeds
+Confirm provider terms, regional coverage, quotas and production permissions before making claims.
+Test and fallback
+Seeded simulator + pytest + API contract tests
+The demo must still work without API keys or internet.
+Deployment
+Docker Compose locally; hosted frontend/backend + managed database if available
+Keep secrets server-side; health checks and logs required.
+6. MCP server design
+Build one focused MCP server called travel-recovery-mcp. Use the current official MCP SDK and pin a tested version. Keep tool names and output schemas stable; implement provider-specific details behind adapters. MCP tools should return structured JSON content and include errors as typed, actionable results rather than raw stack traces.
+Proposed MCP tools
+Tool
+Inputs (illustrative)
+Output / behaviour
+Risk
+get_trip_context
+trip_id
+Trip, legs, constraints, booking metadata available to this app
+Read-only
+verify_disruption
+provider, service_id, departure_date
+Status, delay/cancellation evidence, source, checked_at, confidence
+Read-only
+search_flight_alternatives
+origin, destination, date, passengers, max_price
+Offers with departure/arrival, total price/currency, provider link, freshness
+Read-only
+search_ground_alternatives
+origin, destination, departure_window, modes
+Supported train/bus/road candidates from live adapter or labelled simulator
+Read-only
+compute_transfer
+from_location, to_location, depart_at, mode
+Estimated travel duration, distance, route source and buffer
+Read-only
+get_weather_risk
+locations, time_window
+Forecast variables and caution flags; not proof of a cancellation
+Read-only
+evaluate_itinerary
+candidate_legs, constraints
+Hard constraint violations, slack/buffers, feasible flag
+Deterministic
+rank_recovery_options
+feasible_candidates, weights
+Ranked options with component scores and reasons
+Deterministic
+prepare_recovery_action
+selected_option_id
+Action preview, estimated total, provider destination, approval token/expiry
+No external side effect
+execute_approved_action
+approval_id, idempotency_key
+Execute only an explicitly approved supported action; otherwise return booking link/simulated result
+High risk; approval required
+get_action_status
+action_id
+Pending/success/failure/unknown with provider evidence
+Read-only
+Important: do not give the LLM a generic browser, arbitrary URL fetch, arbitrary SQL, or unrestricted shell tool. Each MCP tool should have a narrow input schema, validate user ownership and date/time/currency values, enforce provider allow-lists, and return only necessary data.
+7. External tools and data providers that support MCP
+Capability
+Suggested source/tool
+How it is used
+Fallback
+Flight offer/status
+Amadeus for Developers, if account access and API coverage permit
+Search offers and/or query flight status; re-check price/availability before any booking flow.
+Seeded flight dataset; label “SIMULATED”.
+Routing/transfer time
+Google Maps Routes API
+Compute road/transit routes or route matrix between airports, stations and terminals. Google documents Compute Routes and Compute Route Matrix [3].
+Cached route estimates or clearly labelled static demo duration.
+Weather
+Open-Meteo Forecast API
+Weather context near transfer points and expected travel window; weather is a risk signal, not a verified service disruption [4].
+No weather-risk signal; tell user unavailable.
+Train/bus schedule
+Official operator/authorized data feed, GTFS/GTFS-Realtime where available, or a manually curated dataset
+Find candidate services and service times; only call it live when the feed is live and authorised.
+Seeded timetable dataset with a visible demo label.
+Geocoding/normalisation
+Google Places/Geocoding or a verified location dataset
+Resolve airport/station names and standardize locations.
+User selection from autocomplete/list.
+Notifications
+Email provider or Telegram bot, optional
+Send user-approved updates after the user opts in.
+In-app notification only.
+Payments/booking
+Provider-authorized booking API or official booking link
+Only for a future phase; no raw payment credentials stored by this project.
+Deep-link to provider or simulated approval outcome.
+Provider access is not guaranteed by choosing a tool. API availability, commercial terms, regional coverage, test-vs-production restrictions, and permission to issue tickets must be checked. Amadeus documentation describes separate flight search, price confirmation, order creation and order-management flows; production booking may require additional arrangements [5][6].
+8. Agent roles and orchestration
+Use one supervisor agent and up to three specialist subagents. Parallelize only independent, read-only research tasks; run validation and action execution centrally.
+Agent / service
+Responsibility
+Tools allowed
+Supervisor / Recovery Planner
+Maintains task plan, asks for missing constraints, merges results, decides whether to replan
+Trip context, verify disruption, delegate, evaluate and rank
+Air Options Specialist
+Searches flights and returns normalized offers
+Flight search/status tools only
+Ground & Transfer Specialist
+Finds ground options and computes station/airport transfer feasibility
+Ground search, routing
+Risk & Evidence Specialist
+Checks weather context, data freshness, conflicts and caveats
+Weather, source verification
+Deterministic evaluator
+Checks budget/deadline/transfer constraints and ranks options
+No LLM-only arithmetic; pure code
+Approval/action service
+Checks approval token and idempotency before any external action
+Only approved action tools
+Deep Agents supports subagents and skills, but feature availability depends on the installed version/configuration. Keep a simpler sequential fallback if parallel subagents complicate debugging. Use a “Recovery Planning” skill that describes required steps, constraints, source-quality rules, and escalation behaviour; a “Travel Data Normalisation” skill for common schemas; and an “Approval & Safety” skill for consent boundaries. Skills guide the agent but do not replace code-level authorization.
+9. Data model
+Entity
+Key fields
+Trip
+trip_id, user_id, destination, deadline, max_extra_cost, currency, preferences, created_at
+TripLeg
+leg_id, trip_id, mode, provider, service_id, origin, destination, depart_at, arrive_at, status
+DisruptionEvent
+event_id, trip_id, type, affected_leg_id, source, source_timestamp, received_at, verified_status
+CandidateOption
+option_id, trip_id, legs_json, estimated_total_cost, arrival_at, transfer_buffer_min, feasibility, score, data_mode, checked_at
+Approval
+approval_id, user_id, option_id, action_summary, cost_snapshot, expires_at, status, approved_at
+ActionRecord
+action_id, approval_id, idempotency_key, provider_ref, status, response_summary, created_at
+AuditEvent
+event_id, trace_id, actor, tool_name, input_summary, result_status, source, timestamp
+Store timestamps in UTC internally and render in the traveller’s local timezone. Store currency explicitly. Minimize personal data; encrypt secrets and sensitive fields where appropriate; set retention and deletion policies.
+10. Recovery scoring and constraint logic
+Apply hard constraints before soft ranking. A high score must never rescue an option that misses a mandatory deadline or exceeds the user’s maximum budget.
+Hard constraints
+Arrival time must be at or before the traveller’s deadline, unless the user explicitly allows a late option to be shown as a fallback.
+Estimated extra cost must be within the budget; if price is unknown, mark “price unverified” and do not silently treat it as zero.
+Transfer arrival plus a configured safety buffer must be earlier than the next departure.
+Passenger count, mobility/accessibility requirements, baggage constraints and allowed transport modes must be respected where data exists.
+Any unverified or stale service is labelled uncertain and must not be described as confirmed.
+Illustrative score
+For feasible candidates only, normalize each component to 0–1 and compute:
+score = 0.40 * deadline_fit + 0.25 * cost_value + 0.20 * transfer_safety + 0.10 * arrival_speed + 0.05 * evidence_confidence
+Weights are initial design choices, not research-proven universal values. Tune them using test scenarios and user feedback. Always display the components and explanations so users can see why an option ranked first.
+Illustrative pseudocode
+def evaluate(option, constraints):    violations = []    if option.arrival_at > constraints.latest_arrival:        violations.append("ARRIVES_AFTER_DEADLINE")    if option.known_extra_cost is not None and option.known_extra_cost > constraints.max_extra_cost:        violations.append("OVER_BUDGET")    if option.has_impossible_transfer:        violations.append("TRANSFER_INFEASIBLE")    if constraints.required_accessibility and not option.accessibility_verified:        violations.append("ACCESSIBILITY_UNVERIFIED")    if violations:        return {"feasible": False, "violations": violations}    return {"feasible": True, "score": deterministic_score(option, constraints)}
+11. API contracts and structured outputs
+Normalize provider-specific data before returning it to the agent. Example candidate schema:
+{  "option_id": "opt_demo_002",  "data_mode": "SIMULATED",  "source": "seeded_demo_provider",  "checked_at": "2026-10-21T09:30:00Z",  "currency": "INR",  "legs": [    {      "mode": "bus",      "origin": "Mangaluru",      "destination": "Bengaluru",      "departure_at": "2026-10-21T12:00:00+05:30",      "arrival_at": "2026-10-21T18:30:00+05:30",      "price": 1600,      "availability_status": "SIMULATED"    }  ],  "estimated_extra_cost": 1600,  "arrival_at": "2026-10-21T18:30:00+05:30",  "transfer_buffer_minutes": 0,  "feasible": true,  "score_components": {    "deadline_fit": 1.0,    "cost_value": 0.82,    "transfer_safety": 0.9,    "arrival_speed": 0.7,    "evidence_confidence": 0.3  },  "explanation": [    "Meets the 20:00 arrival deadline in the demo dataset",    "Within the extra-spend limit",    "Availability is simulated and must be checked with the operator"  ]}
+Keep output schemas versioned. Reject malformed times, negative prices, missing currencies, duplicate leg IDs and impossible itineraries. Use UTC internally and preserve provider time zones.
+12. Safety, privacy and trust controls
+Human approval: no booking, cancellation, payment, or external message without an explicit approval action tied to a specific option, cost snapshot and expiry time.
+Least privilege: read-only search tools by default; separate action tools; credentials scoped to minimum required permissions.
+Provider verification: re-check availability and price immediately before any supported commit action; if changed, stop and ask again.
+Idempotency: every external action uses a unique idempotency key to prevent duplicate bookings on retries.
+Prompt injection defence: treat provider descriptions, emails and retrieved webpages as untrusted data, never as instructions to override policy.
+Input validation: validate dates, currencies, IDs, traveller ownership and all tool arguments at the server boundary.
+Secret handling: keep API keys in environment variables or a secret manager; never expose them to the model, browser bundle, logs or Git.
+Audit trail: record tool name, actor, time, source, outcome and approval reference; redact unnecessary personal details.
+Uncertainty: visibly distinguish LIVE, CACHED, STALE, SIMULATED and UNAVAILABLE data states.
+Safe failure: on conflicting status or provider outage, stop committing actions, present alternatives with caveats, and provide official provider links.
+MCP protocol security and authorization guidance evolves. Follow the current official specification and SDK guidance; tool annotations and descriptions are not a substitute for server-side enforcement [2][7].
+13. Failure handling and resilience
+Failure
+Expected response
+Flight API times out
+Retry a limited number of times with backoff; use cache if freshness policy permits; otherwise mark unavailable and continue with other modes.
+Weather API fails
+Continue without weather input; show “weather check unavailable”; do not invent a forecast.
+Provider returns stale data
+Show timestamp and stale label; do not claim availability is confirmed.
+No option satisfies hard constraints
+Say no feasible option was found; ask whether deadline, budget or mode flexibility can change.
+Conflicting disruption reports
+Do not make an irreversible change; show conflict and request confirmation from operator/provider.
+Agent output invalid JSON
+Validate against schema; request structured retry once; then fall back to deterministic response.
+MCP server disconnected
+Circuit-break, surface tool unavailable, and use permitted fallback adapters or simulator.
+Action result unknown
+Do not retry blindly; query action status using idempotency/reference; tell user the state is unconfirmed.
+Database unavailable
+Fail closed for actions requiring approval persistence; do not execute irreversible action.
+14. Suggested repository structure
+routerescue-ai/  apps/    web/                     # React + Tailwind UI    api/                     # FastAPI endpoints and auth  agent/    supervisor.py            # Deep Agent construction and workflow    subagents.py             # Air, ground/transfer, evidence specialists    skills/      recovery-planning/SKILL.md      data-normalization/SKILL.md      approval-safety/SKILL.md  mcp_server/    server.py                # MCP tools and schemas    tools/      trip_context.py      disruption.py      alternatives.py      routing.py      weather.py      action_preview.py  providers/    amadeus_adapter.py    google_routes_adapter.py    open_meteo_adapter.py    transport_feed_adapter.py    simulator_adapter.py  domain/    schemas.py               # Pydantic types    feasibility.py            # Hard constraints    scoring.py                # Deterministic ranking    policy.py                 # Tool allow-list and approvals  db/    models.py    migrations/    seed_demo_data.py  tests/    unit/    integration/    scenarios/  docker-compose.yml  .env.example  README.md
+15. API endpoints for the web app
+Endpoint
+Purpose
+POST /api/trips
+Create a trip and constraints.
+GET /api/trips/{trip_id}
+Retrieve trip and legs for the authenticated owner.
+POST /api/trips/{trip_id}/disruptions
+Report or simulate a disruption.
+POST /api/trips/{trip_id}/recoveries
+Start a recovery run; return run_id and progress.
+GET /api/recoveries/{run_id}
+Fetch status and candidate options.
+POST /api/recoveries/{run_id}/options/{option_id}/preview
+Create a time-limited action preview.
+POST /api/approvals/{approval_id}/approve
+Approve the exact displayed action snapshot.
+POST /api/approvals/{approval_id}/reject
+Reject the proposed action.
+GET /api/actions/{action_id}
+Check provider action status.
+GET /health
+Liveness/readiness check.
+16. Build sequence
+Phase
+Tasks
+Definition of done
+Phase 1 — domain + demo data
+Define schemas, seeded trips, disruptions, alternatives, local simulator
+One deterministic scenario can run without any API keys.
+Phase 2 — rules engine
+Hard constraints, transfer buffers, ranking and explanations
+Unit tests cover deadline, budget, timezone and transfer edge cases.
+Phase 3 — MCP server
+Implement typed read-only tools, validation and MCP Inspector checks
+Tools discoverable; input/output schemas validated; failures handled.
+Phase 4 — Deep Agent
+Add planning, tool use, optional specialist subagents, replan conditions
+Agent can call the correct tools and produce schema-valid candidate set.
+Phase 5 — frontend
+Trip intake, disruption banner, options table/cards, evidence labels, approval preview
+Complete demo from disruption to approval screen.
+Phase 6 — provider integrations
+Integrate available APIs one by one behind adapters
+Each provider has contract tests and documented limitations.
+Phase 7 — safety + observability
+Approval token, idempotency, auth, audit logs, redaction, timeouts
+Tests prove action cannot execute without approval.
+Phase 8 — evaluation + deployment
+Scenario tests, accessibility/mobile checks, demo script, Docker/deployment
+Demo reproducible and all simulated data labelled.
+17. Test plan and measurable evaluation
+These are proposed evaluation targets for the project, not achieved results. Report measured values from your own test runs.
+Metric
+How to measure
+Initial target
+Feasible-option precision
+Share of options labelled feasible that satisfy all coded hard constraints in scenario tests
+≥ 95% on labelled synthetic test set
+Constraint enforcement
+Try cases over budget, late arrival, impossible transfer, missing approval
+100% of hard-constraint test cases rejected correctly
+Approval safety
+Attempt action with no approval, expired approval, changed price, duplicate retry
+0 unauthorised actions in test suite
+Time to first options
+Measure from submitted disruption to first ranked options
+≤ 30 seconds with seeded/cached demo data
+Data honesty
+Check every option has source, checked_at and data_mode
+100% of options visibly labelled
+Resilience
+Inject provider timeout, bad schema, stale response, MCP disconnect
+Safe fallback for every injected failure
+User comprehension
+Ask test users to identify top option, price, arrival time and uncertainty
+≥ 80% correct in small usability test; improve after feedback
+Minimum scenario matrix
+Flight cancelled, one alternative meets budget/deadline.
+All options exceed budget.
+All options arrive after the deadline.
+Candidate route has an impossible airport transfer.
+API price changes after option selection.
+Weather data unavailable or stale.
+Provider returns contradictory status.
+User rejects all options and changes the deadline.
+Approval expired before execution.
+Repeated action request with the same idempotency key.
+18. Four-minute demo script
+Time
+What to show
+Narration
+0:00–0:25
+Title + trip dashboard
+“RouteRescue AI helps travellers recover from a disrupted trip, with human approval before actions.”
+0:25–0:55
+Trigger a labelled simulated flight cancellation
+“This is a demo event. The app loads the affected itinerary and asks for any missing constraints.”
+0:55–1:35
+Show the agent plan and MCP tool trace
+“The planner checks flight alternatives, ground options, transfers and weather context through typed MCP tools.”
+1:35–2:20
+Show ranked alternatives
+“Hard constraints remove late or over-budget options. Remaining options show cost, arrival time, transfer buffer and source freshness.”
+2:20–3:10
+Open option explanation and action preview
+“The system explains trade-offs and makes uncertainty visible. No action has happened yet.”
+3:10–3:40
+Approve in simulator or open provider link
+“The user approves this exact action. In this build the outcome is simulated unless a provider integration is configured.”
+3:40–4:00
+Show audit log + future integrations
+“We can trace the data and approval. Provider coverage and live booking depend on API access and terms.”
+19. Risks and mitigations
+Risk
+Mitigation
+No public live feed for a transport mode
+Use authorized API/feed where available; otherwise seeded demo data with visible simulation label.
+API quotas/costs or network failure
+Caching, backoff, request budgets, timeouts and graceful fallback.
+LLM hallucination about availability
+Only render availability from typed provider result; require source timestamp and state.
+Bad connection timing
+Deterministic transfer buffer and conservative assumptions; mark unverified station transfers.
+Unintended purchase/cancellation
+Separate action service, approval snapshot, expiry, idempotency and audit.
+Too much complexity for hackathon time
+One MCP server, three provider adapters at most, one strong end-to-end scenario first.
+Weak business assumptions
+Interview travellers/agents and validate willingness to pay before quoting market size or revenue.
+20. Business model and scaling
+Initial users: travellers who need help during a disruption. Potential B2B customers include travel agencies, corporate travel desks, tour operators, and travel-insurance or mobility platforms. Potential monetisation options are a free basic consumer tier, premium monitoring, per-agent B2B SaaS, or an API integration fee. Treat these as hypotheses to validate, not proven market demand.
+Stage 1: hackathon MVP with one regional corridor and simulated data.
+Stage 2: real read-only flight and routing data, subject to access and terms.
+Stage 3: authorized transport feeds, opt-in notifications, and trip monitoring.
+Stage 4: B2B integration, role-based access, service-level monitoring, tenant isolation and analytics.
+21. Slide-by-slide content guide
+Slide 1 — Title and team
+RouteRescue AI; PS 4.1; add team name, member names, leader contact and college details. Do not submit with bracketed fields.
+Slide 2 — Problem statement
+Explain fragmented manual recovery after cancellations/delays and the need for fast, constraint-aware recovery.
+Slide 3 — Solution overview
+Show the example traveller request and explain the agent’s detect → search → validate → rank → approve flow.
+Slide 4 — Technical approach
+Name Deep Agents, MCP, FastAPI, React, database, provider adapters and safety/observability tools.
+Slide 5 — Architecture/workflow
+Use a diagram from UI to backend/agent/MCP/provider adapters/rules engine/database, plus the numbered workflow.
+Slide 6 — Impacts and benefits
+State benefits and evaluation targets as targets, not achieved results.
+Slide 7 — Business impact and scalability
+Describe target users, potential B2B model, scaling plan and integration limitations.
+Slide 8 — Links
+Add GitHub, 4-minute demo video and deployment URL; label simulated data and list tested capabilities.
+22. References and implementation reading
+[1] LangChain, Deep Agents overview and capabilities: https://docs.langchain.com/oss/python/deepagents/overview
+[2] Model Context Protocol, official architecture/specification documentation: https://modelcontextprotocol.io/
+[3] Google Maps Platform, Routes API (Compute Routes and Compute Route Matrix): https://developers.google.com/maps/documentation/routes/
+[4] Open-Meteo, Weather Forecast API documentation: https://open-meteo.com/en/docs
+[5] Amadeus for Developers, Self-Service API tutorials (including flight offers, flight status and order flows): https://admin.developers.amadeus.com/self-service/apis-docs/guides/developer-guides/resources/
+[6] Amadeus for Developers, API FAQ and production/booking limitations: https://admin.developers.amadeus.com/self-service/apis-docs/guides/developer-guides/faq/
+[7] Model Context Protocol, specification release notes and authorization/security updates: https://blog.modelcontextprotocol.io/posts/2026-07-28/
+Research note: documentation pages and provider access terms can change. Re-check the current API documentation, regional coverage, quotas, pricing, attribution rules, and production access before implementation. This document distinguishes proposed architecture and targets from capabilities that must be verified during development.

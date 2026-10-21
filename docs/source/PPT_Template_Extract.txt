@@ -1,0 +1,48 @@
+ppt/slides/slide1.xml
+Team Leader Email: 
+Team Leader Phone:
+College Name:
+Team Name
+Member 1
+Member 2
+Member 3
+Member 4
+Problem Statement ID:
+
+ppt/slides/slide2.xml
+Problem Statement
+Description of Problem Statement
+
+ppt/slides/slide3.xml
+Solution Overview
+Overview of Project
+
+ppt/slides/slide4.xml
+Technical Approach
+Tool1
+Tool2
+Tool3
+
+ppt/slides/slide5.xml
+Diagrams/Flow Charts/Visuals
+Brief walkthrough of how system works
+Architecture diagram.
+
+ppt/slides/slide6.xml
+Impacts and Benefits
+Highlight key impact of your solution and benefits to users, society.
+Use measurable outcomes where possible
+
+ppt/slides/slide7.xml
+Business Impact & Scalability
+Business value of your solution, including cost , revenue , market opportunity
+Describe how solution can scale across users , location , use cases
+
+ppt/slides/slide8.xml
+Additional links
+GitHub Repo link
+Demo Video Link (YouTube or Google Drive, maximum duration: 4 minutes)
+Deployment link ( optional )
+(Rename The file name to your team name while submitting)
+Note:
+(Use the provided PPT template, maintaining the same structure and number of slides without adding or removing any slides)

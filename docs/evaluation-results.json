@@ -1,0 +1,641 @@
+{
+  "generated_at": "2026-10-21T14:33:48.148037+00:00",
+  "scope": "Deterministic evaluator only; excludes API, model and network latency. Separate API and MCP tests cover versions/approval.",
+  "distinct_cases": 30,
+  "executions": 90,
+  "cases_passed": 30,
+  "p50_ms": 0.03345,
+  "p95_ms": 0.0743,
+  "results": [
+    {
+      "case_id": "primary-01",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.1029
+    },
+    {
+      "case_id": "primary-01",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0634
+    },
+    {
+      "case_id": "primary-01",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0853
+    },
+    {
+      "case_id": "primary-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0522
+    },
+    {
+      "case_id": "primary-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.067
+    },
+    {
+      "case_id": "primary-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0669
+    },
+    {
+      "case_id": "primary-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.1095
+    },
+    {
+      "case_id": "primary-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0472
+    },
+    {
+      "case_id": "primary-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0358
+    },
+    {
+      "case_id": "primary-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0312
+    },
+    {
+      "case_id": "primary-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0274
+    },
+    {
+      "case_id": "primary-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0287
+    },
+    {
+      "case_id": "primary-05",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0266
+    },
+    {
+      "case_id": "primary-05",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.026
+    },
+    {
+      "case_id": "primary-05",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0291
+    },
+    {
+      "case_id": "primary-06",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "primary-06",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0321
+    },
+    {
+      "case_id": "primary-06",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.034
+    },
+    {
+      "case_id": "primary-07",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0297
+    },
+    {
+      "case_id": "primary-07",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0299
+    },
+    {
+      "case_id": "primary-07",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0318
+    },
+    {
+      "case_id": "primary-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0303
+    },
+    {
+      "case_id": "primary-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0282
+    },
+    {
+      "case_id": "primary-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0287
+    },
+    {
+      "case_id": "primary-09",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0339
+    },
+    {
+      "case_id": "primary-09",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0336
+    },
+    {
+      "case_id": "primary-09",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0334
+    },
+    {
+      "case_id": "primary-10",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0326
+    },
+    {
+      "case_id": "primary-10",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0326
+    },
+    {
+      "case_id": "primary-10",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0321
+    },
+    {
+      "case_id": "constraint-01",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0337
+    },
+    {
+      "case_id": "constraint-01",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0325
+    },
+    {
+      "case_id": "constraint-01",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0307
+    },
+    {
+      "case_id": "constraint-02",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0348
+    },
+    {
+      "case_id": "constraint-02",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0332
+    },
+    {
+      "case_id": "constraint-02",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.1703
+    },
+    {
+      "case_id": "constraint-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.1061
+    },
+    {
+      "case_id": "constraint-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0743
+    },
+    {
+      "case_id": "constraint-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0697
+    },
+    {
+      "case_id": "constraint-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0724
+    },
+    {
+      "case_id": "constraint-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0352
+    },
+    {
+      "case_id": "constraint-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.034
+    },
+    {
+      "case_id": "constraint-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0333
+    },
+    {
+      "case_id": "constraint-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0331
+    },
+    {
+      "case_id": "constraint-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0319
+    },
+    {
+      "case_id": "constraint-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.034
+    },
+    {
+      "case_id": "constraint-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0335
+    },
+    {
+      "case_id": "constraint-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "constraint-07",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0339
+    },
+    {
+      "case_id": "constraint-07",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0332
+    },
+    {
+      "case_id": "constraint-07",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0342
+    },
+    {
+      "case_id": "constraint-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0346
+    },
+    {
+      "case_id": "constraint-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.0336
+    },
+    {
+      "case_id": "constraint-08",
+      "passed": true,
+      "expected": "FEASIBLE",
+      "actual": "FEASIBLE",
+      "elapsed_ms": 0.033
+    },
+    {
+      "case_id": "constraint-09",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0342
+    },
+    {
+      "case_id": "constraint-09",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0339
+    },
+    {
+      "case_id": "constraint-09",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0333
+    },
+    {
+      "case_id": "constraint-10",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0337
+    },
+    {
+      "case_id": "constraint-10",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0337
+    },
+    {
+      "case_id": "constraint-10",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0337
+    },
+    {
+      "case_id": "failure-01",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "failure-01",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0343
+    },
+    {
+      "case_id": "failure-01",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0344
+    },
+    {
+      "case_id": "failure-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "failure-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0329
+    },
+    {
+      "case_id": "failure-02",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0328
+    },
+    {
+      "case_id": "failure-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0294
+    },
+    {
+      "case_id": "failure-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.029
+    },
+    {
+      "case_id": "failure-03",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0289
+    },
+    {
+      "case_id": "failure-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "failure-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0349
+    },
+    {
+      "case_id": "failure-04",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0331
+    },
+    {
+      "case_id": "failure-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0344
+    },
+    {
+      "case_id": "failure-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0343
+    },
+    {
+      "case_id": "failure-05",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0328
+    },
+    {
+      "case_id": "failure-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0327
+    },
+    {
+      "case_id": "failure-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0328
+    },
+    {
+      "case_id": "failure-06",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0408
+    },
+    {
+      "case_id": "failure-07",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0329
+    },
+    {
+      "case_id": "failure-07",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0318
+    },
+    {
+      "case_id": "failure-07",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0312
+    },
+    {
+      "case_id": "failure-08",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.033
+    },
+    {
+      "case_id": "failure-08",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0329
+    },
+    {
+      "case_id": "failure-08",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0325
+    },
+    {
+      "case_id": "failure-09",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0324
+    },
+    {
+      "case_id": "failure-09",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0359
+    },
+    {
+      "case_id": "failure-09",
+      "passed": true,
+      "expected": "NEEDS_VERIFICATION",
+      "actual": "NEEDS_VERIFICATION",
+      "elapsed_ms": 0.0321
+    },
+    {
+      "case_id": "failure-10",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0338
+    },
+    {
+      "case_id": "failure-10",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0333
+    },
+    {
+      "case_id": "failure-10",
+      "passed": true,
+      "expected": "INFEASIBLE",
+      "actual": "INFEASIBLE",
+      "elapsed_ms": 0.0322
+    }
+  ]
+}
