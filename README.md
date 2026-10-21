@@ -4,7 +4,7 @@
 
 A cancelled flight threatens a traveller's pickup, hotel and workshop. RouteRescue checks connected bookings, evaluates alternatives, offers exact budget/time trade-offs, and produces an evidence-backed recovery receipt.
 
-**All travel data are simulated.** Confirming a plan never buys or cancels a real booking. The supported fixture corridor is Mangaluru → Bengaluru on 15 November 2026. Model-free mode works without credentials.
+**Travel inventory is demo data; agent execution is real.** The supported corridor is Mangaluru → Bengaluru on 15 November 2026. OpenRouter is the default execution mode. Missing or failed model access is reported explicitly, without silently substituting canned results. Confirming a recovery never purchases or cancels a real booking.
 
 ## Setup and launch
 
@@ -22,7 +22,12 @@ npm.cmd --prefix apps/web run build
 
 Open **http://127.0.0.1:8000**. API documentation: **http://127.0.0.1:8000/docs**. Keep the terminal running. Do not overwrite an existing `.env` containing your configuration.
 
-Each browser session gets a private sample trip. Choose **Simulate flight cancellation**, inspect the ₹3,200 option, then **Simulate bus unavailable** to see the ₹800 / 45-minute recovery frontier.
+Sign in at `/login`. The admin dashboard is `/admin`; travellers use `/app`. Five local accounts and eight assigned trips are seeded once. See [all demo credentials](docs/accounts.md).
+
+- **Admin:** `admin@routerescue.local` / `Admin@12345`
+- **Traveller:** `aarav@routerescue.local` / `Aarav@12345`
+
+Travellers see only their own trips. Select a trip, choose **Report a disruption**, describe what happened and enter when you can leave. The agent reads the trip/report, searches current inventory and evaluates updated plans through MCP tools. Admin edits to fares, availability or capacity invalidate old recovery results.
 
 For frontend development, run the API plus `npm.cmd --prefix apps/web run dev` on port 5173. Normal use serves the built frontend and API together on port 8000.
 
@@ -37,7 +42,7 @@ AGENT_MODE=openrouter
 OPENROUTER_API_KEY=your-key
 OPENROUTER_MODEL=openrouter/free
 ALLOW_PAID_MODELS=false
-AGENT_TIMEOUT_SECONDS=25
+AGENT_TIMEOUT_SECONDS=90
 LANGSMITH_TRACING=true
 LANGSMITH_API_KEY=your-key
 LANGSMITH_PROJECT=routerescue
@@ -46,7 +51,7 @@ LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 
 Use your LangSmith account's regional endpoint and workspace ID when required. Secrets never belong in the frontend or source control.
 
-The free router selects available free models with the requested capabilities; availability and rate limits vary. A specific tool-capable `:free` model also works. Paid models require `ALLOW_PAID_MODELS=true`; no automatic paid fallback occurs. Use an account-side credit limit if enabling a paid model. Research is bounded to **5 model calls, 12 tool calls, 900 output tokens per response, and a 25-second default deadline**.
+The free router selects available free models with required capabilities; availability and rate limits vary. A specific tool-capable `:free` model also works. Paid models require `ALLOW_PAID_MODELS=true`; no automatic paid fallback occurs. Use an account-side credit limit if enabling paid models. Research is bounded to **6 model calls, 12 tool calls, 1,200 output tokens per response and a 90-second default deadline**.
 
 Verify your actual credentials with:
 
@@ -54,22 +59,27 @@ Verify your actual credentials with:
 .\.venv\Scripts\python.exe scripts/manage.py smoke-agent
 ```
 
-Recover a trip in the UI and expand **Recovery activity**. Search its run ID in your LangSmith project. Traces cover the recovery, agent/model/tool calls, inventory search and deterministic validation. Workspace settings show configuration, not proof that LangSmith received a trace.
+Recover a trip and expand **Recovery activity**. Choose **Verify LangSmith trace** to check remote delivery and open the exact trace. Traces cover the recovery, model/tool calls, inventory search and validation. Admins can inspect runs, tool stages and token usage across accounts. Configuration status alone is not proof of trace delivery.
 
-Without credentials, model planning is explicitly unavailable and deterministic fixture recovery remains usable. The test suite uses a scripted model to exercise real Deep Agents and MCP. **Live OpenRouter calls and LangSmith delivery must still be verified with your keys.**
+Live OpenRouter/MCP execution and LangSmith delivery have been verified: **4 model calls, 5 tool calls, a validated recovery and a remotely retrieved trace**. The smoke command uses a temporary database. Keys remain in ignored `.env`.
+
+`AGENT_MODE=fixture` is retained only for explicit offline testing. The normal app uses `openrouter` and requires working credentials. SQLite inventory stays labelled as demo data even when the model and tracing connections are live.
 
 ## Verification
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/manage.py test
 .\.venv\Scripts\python.exe scripts/evaluate.py
-# Keep the built app running on port 8000 for browser tests:
+# In another terminal, start the isolated offline test server:
+.\.venv\Scripts\python.exe scripts/browser_server.py
+# In the test terminal:
 Set-Location apps/web
+$env:APP_URL='http://127.0.0.1:8011'
 npx.cmd playwright install chromium
 npm.cmd run test:e2e
 ```
 
-See [measured verification results](docs/verification.md). Backend tests use temporary SQLite databases; browser tests create private sessions in the local app. Screenshots are generated in `artifacts/`.
+See [verification results](docs/verification.md). Backend and browser tests use temporary databases. Offline browser tests do not spend model credits; actual provider calls are verified separately. Restart the browser test server before each full suite because admin tests edit seeded inventory. Screenshots are generated in `artifacts/`.
 
 ## Reset and package
 
@@ -105,6 +115,6 @@ scripts/                 Launch, seed, test, reset, evaluate, package
 docs/                    Requirements, verification and submission content
 ```
 
-Browser-session identity is local, not a production account system. Live inventory, buying tickets, notifications and automatic monitoring are out of scope. Interrupted runs are marked failed on server restart and can be retried. Persisted results survive refresh/restart.
+Accounts use salted scrypt passwords and hashed, revocable server-side session tokens with role and ownership checks. Demo credentials are public; do not deploy them unchanged on a public server. Live airline inventory, ticket purchases, notifications and automatic monitoring remain out of scope. Interrupted runs are marked failed on restart and can be retried. Persisted results survive refresh/restart.
 
 Read [implementation/scope](docs/implementation.md), [demo/submission script](docs/demo-and-submission.md) and the [original blueprint](docs/source/RouteRescue_AI_Implementation_Blueprint.md).

@@ -1,0 +1,45 @@
+{
+  "state": "OPTIONS_READY",
+  "recommended_option_id": "A",
+  "langsmith_received": true,
+  "remote_child_spans": 4,
+  "agent": {
+    "status": "COMPLETE",
+    "model": "openrouter/free",
+    "tool_calls": 5,
+    "model_calls": 4,
+    "usage": {
+      "input_tokens": 19827,
+      "output_tokens": 600,
+      "total_tokens": 20427
+    },
+    "tool_activity": [
+      {
+        "name": "get_trip",
+        "status": "COMPLETE",
+        "elapsed_ms": 2000
+      },
+      {
+        "name": "verify_event",
+        "status": "COMPLETE",
+        "elapsed_ms": 1947
+      },
+      {
+        "name": "search_transport",
+        "status": "COMPLETE",
+        "elapsed_ms": 1939
+      },
+      {
+        "name": "search_stays",
+        "status": "COMPLETE",
+        "elapsed_ms": 1953
+      },
+      {
+        "name": "evaluate_options",
+        "status": "COMPLETE",
+        "elapsed_ms": 1656
+      }
+    ]
+  },
+  "scope": "Actual OpenRouter free-router and MCP execution, synthetic travel inventory, remote LangSmith trace retrieval. Private trace URL and credentials excluded."
+}

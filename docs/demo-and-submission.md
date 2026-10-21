@@ -1,11 +1,11 @@
 # Four-minute demo
 
-1. **0:00–0:30:** Show connected bookings, 19:00 venue deadline and ₹5,000 spending limit. State the data are synthetic.
-2. **0:30–1:15:** Simulate flight cancellation. Show ₹3,200 recovery and ledger. Explain B's ₹800 excess, C's 45-minute delay and D's impossible transfer.
-3. **1:15–2:00:** Simulate bus unavailable. Show that A is no longer selectable and the frontier requires an explicit choice.
+1. **0:00–0:30:** Sign in as Aarav and select his flight trip. Show the 19:00 deadline and ₹5,000 limit. Explain that travel inventory is demo data while the agent/tool calls are real.
+2. **0:30–1:15:** Report the flight cancellation with an 08:00 ready-to-leave time. Show ₹3,200 recovery and ledger. Explain B's ₹800 excess, C's 45-minute delay and D's impossible transfer.
+3. **1:15–2:00:** Report the replacement bus unavailable. Show that A is no longer selectable and the frontier requires an explicit choice.
 4. **2:00–2:35:** Increase budget to ₹5,800. Show fresh validation and 17:00 arrival. A constraint change is not booking approval.
 5. **2:35–3:15:** Review and confirm the simulated receipt. Show booking pending with provider, evidence and JSON/print export.
-6. **3:15–3:40:** Show Activity and verification results. If configured, inspect the shown run ID in LangSmith; otherwise say model-free mode is active.
+6. **3:15–3:40:** Show Activity and verification results. Verify and open the exact LangSmith trace. Show the admin inventory and execution history. Allow for variable free-model latency or record a verified run in advance.
 7. **3:40–4:00:** Explain the travel-desk pilot hypothesis and supported scope. Do not claim live booking, real fares or measured model latency.
 
 ## Exactly eight slides
