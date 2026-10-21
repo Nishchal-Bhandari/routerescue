@@ -3,8 +3,15 @@ import {test,expect} from '@playwright/test';
 test('complete recovery, second disruption, relaxation and approval',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
+ await page.getByLabel('Email address').fill('aarav@routerescue.local');
+ await page.getByLabel('Password',{exact:true}).fill('Aarav@12345');
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await page.getByRole('button',{name:'New trip',exact:true}).click();
+ await page.getByRole('button',{name:'Create trip',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Let’s keep your trip on track.'})).toBeVisible();
- await page.getByRole('button',{name:'Simulate flight cancellation',exact:true}).click();
+ await page.getByRole('button',{name:'Report a disruption',exact:true}).click();
+ await page.getByLabel('Tell us what changed').fill('My flight was cancelled. Please find another way to Bengaluru.');
+ await page.getByRole('button',{name:'Find updated plans',exact:true}).click();
  await expect(page.getByRole('heading',{name:'A plan that keeps the evening yours.'})).toBeVisible();
  await expect(page.locator('.option-price')).toContainText('₹3,200');
  await page.screenshot({path:'../../artifacts/recovery-desktop.png',fullPage:true});
@@ -14,7 +21,9 @@ test('complete recovery, second disruption, relaxation and approval',async({page
  await expect(page.getByRole('dialog')).toBeVisible();
  await expect(page.getByRole('button',{name:'Confirm this recovery plan'})).toBeDisabled();
  await page.getByRole('button',{name:'Close dialog'}).click();
- await page.getByRole('button',{name:'Simulate bus unavailable'}).click();
+ await page.getByRole('button',{name:'Report another disruption'}).click();
+ await page.getByLabel('Tell us what changed').fill('My replacement bus is unavailable. Please search again.');
+ await page.getByRole('button',{name:'Find updated plans',exact:true}).click();
  await expect(page.getByRole('heading',{name:'A small change could get you there.'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Add ₹800 to your limit'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Allow 45 more minutes'})).toBeVisible();
@@ -38,11 +47,16 @@ test('complete recovery, second disruption, relaxation and approval',async({page
 
 test('mobile intake, hotel recovery and keyboard dialog dismissal',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/');
+ await page.getByLabel('Email address').fill('diya@routerescue.local');
+ await page.getByLabel('Password',{exact:true}).fill('Diya@12345');
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await page.getByRole('button',{name:'New trip',exact:true}).click();
  await page.getByLabel('Trip name').fill('Hotel recovery test');
  await page.getByRole('combobox',{name:'Scenario',exact:true}).selectOption('hotel');
  await page.getByRole('button',{name:'Create trip',exact:true}).click();
- await page.getByRole('button',{name:'Simulate hotel cancellation',exact:true}).click();
+ await page.getByRole('button',{name:'Report a disruption',exact:true}).click();
+ await page.getByLabel('Tell us what changed').fill('My hotel cancelled my reservation. I need a replacement stay.');
+ await page.getByRole('button',{name:'Find updated plans',exact:true}).click();
  await expect(page.getByRole('heading',{name:'A new stay, the same evening'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
  await page.screenshot({path:'../../artifacts/recovery-mobile.png',fullPage:true});
