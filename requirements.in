@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+deepagents
+langchain-openai
+langchain-mcp-adapters
+langgraph-checkpoint-sqlite
+langsmith
+mcp
+httpx
+pytest
+pytest-asyncio
