@@ -51,30 +51,7 @@ def main():
                         archive.write(file,file.relative_to(ROOT))
         print(target)
     elif args.command=='smoke-agent':
-        import asyncio
-        from tempfile import TemporaryDirectory
-        from fastapi.testclient import TestClient
-        from apps.api.main import app
-        from routerescue.agent.planner import plan
-        from routerescue.config import runtime_status
-        from langsmith import tracing_context
-        from langchain_core.tracers.langchain import wait_for_all_tracers
-        from uuid import uuid4
-        status=runtime_status()
-        if not status['agent_available']: raise SystemExit('Set AGENT_MODE=openrouter and OPENROUTER_API_KEY in .env first.')
-        with TemporaryDirectory(prefix='routerescue-smoke-') as temporary:
-            # Keep the live smoke test's records separate from the user's demo.
-            os.environ['DATABASE_PATH']=str(Path(temporary)/'smoke.sqlite3')
-            with TestClient(app) as client:
-                owner=client.post('/api/session').json()['owner_id']
-                trip=client.post('/api/trips',json={}).json()
-                client.post(f"/api/trips/{trip['id']}/events",json={'event_type':'FLIGHT_CANCELLED','source_event_id':'smoke'})
-                run_id=str(uuid4())
-                with tracing_context(enabled=status['langsmith_enabled'],project_name=status['langsmith_project']):
-                    result=asyncio.run(plan(owner,trip['id'],run_id))
-                wait_for_all_tracers()
-                print(json.dumps(result,indent=2))
-                if result['status']!='COMPLETE': raise SystemExit(1)
+        run([sys.executable,str(ROOT/'scripts'/'verify_live.py')])
 
 
 if __name__=='__main__': main()

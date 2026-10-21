@@ -269,6 +269,9 @@ if web_dist.exists():
 
 
 @app.get('/')
+@app.get('/login')
+@app.get('/admin')
+@app.get('/app')
 def index():
     if (web_dist/'index.html').exists(): return FileResponse(web_dist/'index.html')
     return {'message':'Run npm.cmd run build in apps/web, then restart the API, or use the Vite dev server.'}

@@ -10,6 +10,7 @@ type Overview={users:Account[];trips:Trip[];runs:Run[];audit:{id:number;trip_id:
 export function AuthRoot({Traveller}:{Traveller:React.ComponentType<{user:Account;onLogout:()=>void}>}){
  const [user,setUser]=useState<Account|null>(null),[loading,setLoading]=useState(true);
  useEffect(()=>{api<Account>('/auth/me').then(setUser).catch(()=>setUser(null)).finally(()=>setLoading(false));},[]);
+ useEffect(()=>{if(!loading)window.history.replaceState(null,'',user?(user.role==='admin'?'/admin':'/app'):'/login');},[user,loading]);
  async function logout(){try{await api('/auth/logout',{method:'POST'});setUser(null);localStorage.removeItem('rr-trip');}catch{window.location.reload();}}
  if(loading)return <div className="auth-loading"><LoaderCircle className="spin"/>Opening your workspace…</div>;
  if(!user)return <Login onLogin={setUser}/>;
