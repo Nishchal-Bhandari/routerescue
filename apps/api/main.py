@@ -70,10 +70,16 @@ def owned_run(db,run_id,user):
     return run,trip
 
 
+@app.get('/health')
 @app.get('/api/health')
+@app.get('/ping')
+@app.head('/health')
+@app.head('/api/health')
+@app.head('/ping')
 def health():
     with store.connection() as db: db.execute('SELECT 1')
     return {'status':'ok','database':'SQLite'}
+
 
 
 @app.post('/api/session')
